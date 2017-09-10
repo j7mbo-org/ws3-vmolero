@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+
+    php:
+        container_name: websockets-workshop-3-php
+        build: ./docker
+        ports:
+            - 1337:80
+            - 1338:1338
+
+
+        volumes:
+            - ./:/appdata

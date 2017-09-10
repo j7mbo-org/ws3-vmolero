@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="assets/bootstrap.min.css" />
+    </head>
+    <body style="padding-top: 3.5rem;">
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+            <a class="navbar-brand" href="#">WS1</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="jumbotron">
+            <div class="container">
+                <h1 class="display-3">Websocket Tutorial 3</h1>
+                <h2><small class="text-muted">Subscribing / Non-Blocking Architecture</small></h2>
+                <p>
+                    WS3 covers subscribing and unsubscribing from the current time and the result of an SQL command, just
+                    like WS2. However this time, the SQL command has a sleep call in it which would normally block the
+                    event loop, so it needs to be executed in another process using React\ChildProcess.
+                </p>
+                <p>
+                    The subscription for time has already been done for you. You just need to implement client-side
+                    subscribing to the 'sql' topic, and using an external process the publish the result of the SQL
+                    query which takes multiple seconds to execute.
+                </p>
+                <p>
+                    You only need to touch <span class="font-weight-bold">two files</span> to make this all work! These
+                    are: <code class="highlighter-rouge">web/assets/websockets.js</code> and <code class="highlighter-rouge">src/EventHandler.php</code>.
+                </p>
+                <p>
+                    You can access the docker container with:
+                    <code class="highlighter-rouge">
+                        docker exec -i -t $(docker-compose ps | grep 'php' | awk '{print $1}') /bin/bash
+                    </code>
+                </p>
+                <p>
+                    To start the Websocket server within the docker container, run:
+                    <code class="highlighter-rouge">php /appdata/bin/websocket-server.php</code>
+                </p>
+                <hr />
+                <p class="lead">
+                    To successfully complete WS3 you need to complete the tasks below.
+                </p>
+                <p>
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-primary">
+                            <span class="badge badge-success">#1</span>
+                            We should be able to subscribe and unsubscribe from the SQL results
+                        </li>
+                        <li class="list-group-item list-group-item-primary">
+                            <span class="badge badge-success">#2</span>
+                            The SQL results should be displayed under the relevant 'streamed data' section
+                        </li>
+                        <li class="list-group-item list-group-item-primary">
+                            <span class="badge badge-success">#3</span>
+                            The SQL query should be performed in an external process, created from the Event Handler, so
+                            the current time being published every second is not interrupted. The file that executes this
+                            SQL query is in bin/call-sql.php
+                        </li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h2>Time (Subscribe)</h2>
+                    <p>
+                        This button, with id <code class="highlighter-rouge">#subscribe-time</code>, should subscribe
+                        the user to receive the current time every second
+                    </p>
+                    <button id="subscribe-time"  type="button" class="btn btn-primary btn-lg">Subscribe</button>
+                </div>
+                <div class="col">
+                    <h2>Time (Unsubscribe)</h2>
+                    <p>
+                        This button, with id <code class="highlighter-rouge">#unsubscribe-time</code>, should
+                        unsubscribe the user from the current time, and cancel the timer server-side if no more users
+                        are subscribed
+                    </p>
+                    <button id="unsubscribe-time" type="button" class="btn btn-primary btn-lg disabled">
+                        Unsubscribe
+                    </button>
+                </div>
+                <div class="col">
+                    <h2>Streamed Data</h2>
+                    <p>
+                        The div, with id <code class="highlighter-rouge">#data-time</code>, should be updated every time
+                        data is received from the server for the time subscription
+                    </p>
+                    <p>
+                        <div id="data-time" class="alert alert-primary" role="alert">
+                            No data yet...
+                        </div>
+                    </p>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 20px;">
+                <div class="col">
+                    <h2>Sql (Subscribe)</h2>
+                    <p>
+                        This button, with id <code class="highlighter-rouge">#subscribe-sql</code>, should subscribe
+                        the user to receive the current sql every second
+                    </p>
+                    <button id="subscribe-sql" type="button" class="btn btn-primary btn-lg">Subscribe</button>
+                </div>
+                <div class="col">
+                    <h2>Sql (Unsubscribe)</h2>
+                    <p>
+                        This button, with id <code class="highlighter-rouge">#unsubscribe-sql</code>, should
+                        unsubscribe the user from the current sql data stream, and cancel the timer server-side if no
+                        more users are subscribed
+                    </p>
+                    <button id="unsubscribe-sql" type="button" class="btn btn-primary btn-lg disabled">
+                        Unsubscribe
+                    </button>
+                </div>
+                <div class="col">
+                    <h2>Streamed Data</h2>
+                    <p>
+                        The div, with id <code class="highlighter-rouge">#data-sql</code>, should be updated every time
+                        data is received from the server for the sql subscription
+                    </p>
+                    <p>
+                        <div id="data-sql" class="alert alert-primary" role="alert">
+                            No data yet...
+                        </div>
+                    </p>
+                </div>
+            </div>
+
+            <hr>
+
+            <footer>
+                <p class="text-muted">James Mallison - PHPNW 2017</p>
+            </footer>
+        </div>
+
+        <script type="text/javascript" src="assets/jquery.min.js"></script>
+        <script type="text/javascript" src="assets/popper.min.js"></script>
+        <script type="text/javascript" src="assets/bootstrap.min.js"></script>
+        <script type="text/javascript" src="assets/autobahn.min.js"></script>
+        <script type="text/javascript" src="assets/websockets.js"></script>
+    </body>
+</html>
